@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+{% block content %}
+
+        <div class="content-section">
+                        <!-- Movie header: poster + information -->
+                <div class="movie-header">
+                    <img class="movie-page-poster"src="{{ url_for('static', filename='posters/' + movie.poster) }}">
+                    <div class="movie-info">
+                            <h2 class="account-heading">{{ movie.title }} </h2>
+                            <p>
+                                <strong>{{ movie.release_year }} &middot; {{ movie.genre }}</strong>
+                            </p>
+                            {% if average_rating %}
+                                <p>
+                                    <strong>Average Rating:</strong>
+                                    {% if average_rating >= 8 %}
+                                        ⭐<span class="badge bg-success">{{ "%.1f"|format(average_rating) }}/10</span>
+                                    {% elif average_rating >= 5 %}
+                                        ⭐<span class="badge bg-warning text-dark">{{ "%.1f"|format(average_rating) }}/10</span>
+                                    {% else %}
+                                        ⭐<span class="badge bg-danger">{{ "%.1f"|format(average_rating) }}/10</span>
+                                    {% endif %}
+                                </p>
+                            {% else %}
+                                <p><strong class="badge bg-secondary">No ratings yet</strong></p>
+                            {% endif %}
+                            {% if existing_review %}
+                                <a href="#my-review" class="write-review-btn">
+                                    View My Review
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('write_review', movie_id=movie.id) }}" class="write-review-btn">
+                                    Write Review
+                                </a>
+                            {% endif %}
+                    </div>
+                </div>
+                <!-- Description below -->
+                <div class="movie-description">
+                    <h4>Description</h4>
+                    <p class="movie-description-text"> {{ movie.description }}</p>
+                </div>
+        </div>
+                    <h1 class="m-3">Reviews &middot; {{ movie.reviews|length }}</h1>
+        <div>
+                {% for review in reviews.items %}
+
+                    <article class="movie-review-card" {% if current_user.is_authenticated and review.author == current_user %} id="my-review"{% endif %}>
+                        <div class="review-header">
+                                <div class="review-user">
+
+                                    <img class="review-profile-pic" src="{{ url_for('static',filename='profile_pics/' + review.author.image_file) }}">
+                                    <div>
+                                        <a href="{{url_for('user_profile',username=review.author.username)}}">{{ review.author.username }}</a>
+                                        {% if review.author == current_user %}
+                                            <span class="badge bg-success ms-2">Your Review</span>
+                                        {% endif %}
+                                        <small class="text-muted d-block">{{ review.date_posted.strftime('%Y-%m-%d') }}</small>
+                                    </div>
+                                </div>
+                                {% if current_user.is_authenticated and review.author == current_user %}
+                                    <div class="review-actions">
+
+                                        <a href="{{ url_for('write_review', movie_id=movie.id) }}"
+                                                class="btn btn-outline-primary btn-sm"> Edit
+                                        </a>
+                                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal{{ review.id }}">Delete
+                                        </button>
+
+                                    </div>
+                                {% endif %}
+                        </div>
+                            <div class="review-text-box">
+                                {{ review.content }}
+                                <div class="review-body">
+
+                                    <div class="rating-box">
+
+                                        <span class="rating-label">⭐</span>
+                                        {% if review.rating >= 8 %}
+                                            <span class="badge bg-success">{{ review.rating }}/10</span>
+                                        {% elif review.rating >= 5 %}
+                                            <span class="badge bg-warning text-dark">{{ review.rating }}/10</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ review.rating }}/10</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                    </article>
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal{{ review.id }}" tabindex="-1">
+
+                            <div class="modal-dialog">
+
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Delete Review?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-footer">
+                                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ url_for('delete_review',review_id=review.id) }}" method="POST">
+                                                <input class="btn btn-danger" type="submit" value="Delete">
+                                            </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                {% endfor %}
+
+        </div>
+        {%for page_num in reviews.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1)%}
+            {%if page_num%}
+                {%if reviews.page== page_num%}
+                    <a class="btn btn-info mb-4" href="{{url_for('movie_page',movie_id=movie.id,page=page_num)}}">{{page_num}}</a>
+                {%else%}
+                    <a class="btn btn-outline-info mb-4" href="{{url_for('movie_page',movie_id=movie.id,page=page_num)}}">{{page_num}}</a>
+                {%endif%}
+            {%else%}
+                ...
+            {%endif%}
+        {%endfor%}
+
+{% endblock content %}

@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+
+instance/
+
+site.db
+*.db
+*.sqlite
+*.sqlite3
+
+.vscode/
+
+moviesite/static/profile_pics/
+moviesite/static/posters/

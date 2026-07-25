@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block content %}
+
+        <div class="content-section text-bottom">
+            <img class="rounded-circle account-img" src="{{ image_file }}">
+            <h2 class="account-heading mt-3">{{ user.username }}</h2>
+
+            <div class="mt-4">
+                {% if average_rating %}
+                    <p class="mb-2">
+                        <strong>Average Rating Given</strong>
+                        {% if average_rating >= 8 %}
+                            ⭐ <span class="badge bg-success">{{ "%.1f"|format(average_rating) }}/10</span>
+                        {% elif average_rating >= 5 %}
+                            ⭐ <span class="badge bg-warning text-dark">{{ "%.1f"|format(average_rating) }}/10</span>
+                        {% else %}
+                            ⭐ <span class="badge bg-danger">{{ "%.1f"|format(average_rating) }}/10</span>
+                        {% endif %}
+                    </p>
+                {% endif %}
+                <p>
+                    <strong>Reviews Written</strong>
+                    <span class="badge bg-secondary">{{ user_reviews.total }}</span>
+                </p>
+            </div>
+        </div>
+
+          <h2 class="mb-4">Reviews &middot;{{ user_reviews.total }}</h2>
+
+            {% if user_reviews %}
+                {% for review in user_reviews.items %}
+                <article class="review-card mb-4">
+                    <div class="review-header">
+                        <div>
+                            <h4 class="mb-1">
+                                <a href="{{ url_for('movie_page',movie_id=review.movie.id) }}" class="text-decoration-none">
+                                    🎬 {{ review.movie.title }}
+                                </a>
+                            </h4>
+                            <small class="text-muted">{{ review.movie.release_year }} &middot;{{ review.movie.genre }}</small>
+                        </div>
+                        <div class="rating-box">
+                            <span class="rating-label">⭐</span>
+                            {% if review.rating >= 8 %}
+                                <span class="badge bg-success">{{ review.rating }}/10</span>
+                            {% elif review.rating >= 5 %}
+                                <span class="badge bg-warning text-dark">{{ review.rating }}/10</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ review.rating }}/10</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr class="my-3">
+                    <div class="review-text-box">
+                        {{ review.content }}
+                        <small class="text-muted d-block mt-3">
+                            {{ review.date_posted.strftime('%Y-%m-%d') }}
+                        </small>
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+            <div class="content-section text-below">
+                <h4>No reviews yet.</h4>
+            </div>
+
+            {% endif %}
+            {%for page_num in user_reviews.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1)%}
+            {%if page_num%}
+                {%if user_reviews.page== page_num%}
+                    <a class="btn btn-info mb-4" href="{{url_for('user_profile',username=user.username,page=page_num)}}">{{page_num}}</a>
+                {%else%}
+                    <a class="btn btn-outline-info mb-4" href="{{url_for('user_profile',username=user.username,page=page_num)}}">{{page_num}}</a>
+                {%endif%}
+            {%else%}
+                ...
+            {%endif%}
+        {%endfor%}
+
+
+{% endblock content %}

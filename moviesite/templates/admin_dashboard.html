@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block content %}
+
+                <div class="content-section">
+                    <h2 class="mb-3">🛠️ Admin Dashboard</h2>
+                    <p class="text-muted">
+                        Manage movies, Edit existing ones, or Delete them.
+                    </p>
+                    <div class="mb-4">
+                        <span class="badge bg-primary me-2">
+                            🎬 Movies: {{ movie_count }}
+                        </span>
+                        <span class="badge bg-success me-2">
+                            ⭐ Reviews: {{ review_count }}
+                        </span>
+                        <span class="badge bg-secondary">
+                            👤 Users: {{ user_count }}
+                        </span>
+                    </div>
+                    <a href="{{ url_for('add_movie') }}" class="add-movie-btn"> + Add Movie</a>
+                </div>
+                {% if movies %}
+                    {% for movie in movies %}
+                        <article class="review-card mb-4">
+                            <div class="d-flex">
+                                    <img class="admin-movie-poster" src="{{ url_for('static', filename='posters/' + movie.poster) }}">
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1">
+                                        <a href="{{ url_for('movie_page', movie_id=movie.id) }}" class="text-decoration-none">
+                                            {{ movie.title }}
+                                        </a>
+                                    </h4>
+                                    <small class="text-muted">{{ movie.release_year }}&middot;{{ movie.genre }}</small>
+                                    <p class="mt-2 mb-3 text-muted">
+                                        {{ movie.description[:120] }}
+                                        {% if movie.description|length > 120 %}
+                                            ...
+                                        {% endif %}
+
+                                    </p>
+                                    <div class="movie-edit-actions">
+                                        <a href="{{ url_for('edit_movie', movie_id=movie.id) }}"
+                                        class="btn btn-outline-primary btn-sm me-2">
+                                            Edit
+                                        </a>
+                                        <button
+                                            class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal{{ movie.id }}">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal{{ movie.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"> Delete "{{ movie.title }}"?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        This action cannot be undone.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <form action="{{ url_for('delete_movie', movie_id=movie.id) }}" method="POST">
+                                            <input class="btn btn-danger" type="submit" value="Delete">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                <div class="alert alert-info">
+                    No movies have been added yet.
+                </div>
+                {% endif %}
+        {%for page_num in movies.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1)%}
+            {%if page_num%}
+                {%if movies.page== page_num%}
+                    <a class="btn btn-info mb-4" href="{{url_for('admin_dashboard',page=page_num,q=request.args.get('q',''))}}">{{page_num}}</a>
+                {%else%}
+                    <a class="btn btn-outline-info mb-4" href="{{url_for('admin_dashboard',page=page_num,q=request.args.get('q',''))}}">{{page_num}}</a>
+                {%endif%}
+            {%else%}
+                ...
+            {%endif%}
+        {%endfor%}
+
+{% endblock content %}

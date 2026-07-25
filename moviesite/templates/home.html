@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block content %}
+            {% if movies %}
+                <div class="movie-grid">
+                    {% for movie in movies.items %}
+                        <article class="movie-card">
+                            <img class="movie-poster" src="{{ url_for('static', filename='posters/' + movie.poster) }}">
+                            <div class="movie-info">
+                                    <h3 class="movie-title"> {{ movie.title }} </h3>
+                                    <small class="text-muted"> {{ movie.release_year }} </small>
+                                    <span class="badge bg-secondary rounded-pill genre-badge">{{ movie.genre }}</span>
+                                <div class="movie-rating">
+                                    {% set reviews = movie.reviews %}
+                                        {% if reviews %}
+                                            {% set average = (reviews|sum(attribute='rating')) / (reviews|length) %}
+                                            {% if average >= 8 %}
+                                                ⭐<span class="badge bg-success"> {{ "%.1f"|format(average) }}/10</span>
+                                            {% elif average >= 5 %}
+                                                ⭐<span class="badge bg-warning text-dark">{{ "%.1f"|format(average) }}/10</span>
+                                            {% else %}
+                                                ⭐<span class="badge bg-danger">{{ "%.1f"|format(average) }}/10</span>
+                                            {% endif %}
+                                            <small class="badge bg-steel">
+                                                {{ reviews|length }}
+                                                {% if reviews|length == 1 %}
+                                                    Review
+                                                {% else %}
+                                                    Reviews
+                                                {% endif %}
+                                            </small>
+                                        {% else %}
+                                            <span class="badge bg-steel"> No ratings </span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="movie-summary">
+                                        {{ movie.description[:120] }}
+                                        {% if movie.description|length > 120 %}
+                                            ...
+                                        {% endif %}
+                                    </p>
+                                    <a href="{{ url_for('movie_page',movie_id=movie.id) }}" class="view-movie-btn">
+                                        View Movie →
+                                    </a>
+                                </div>
+                            </article>
+                        {% endfor %}
+
+                </div>
+            {% else %}
+                        <div class="content-section text-center p-5">
+                            <h3>No movies found 🎬</h3>
+                            <p class="text-muted">Try searching for another movie.</p>
+                        </div>
+            {% endif %}
+        {%for page_num in movies.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1)%}
+            {%if page_num%}
+                {%if movies.page== page_num%}
+                    <a class="btn btn-info mb-4" href="{{url_for('home',page=page_num,q=request.args.get('q',''))}}">{{page_num}}</a>
+                {%else%}
+                    <a class="btn btn-outline-info mb-4" href="{{url_for('home',page=page_num,q=request.args.get('q',''))}}">{{page_num}}</a>
+                {%endif%}
+            {%else%}
+                ...
+            {%endif%}
+        {%endfor%}
+
+{% endblock content %}

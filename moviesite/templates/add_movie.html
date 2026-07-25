@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <fieldset class="form-group">
+            {%if legend%}
+            <legend class="border-bottom mb-4">{{legend}}</legend>
+            {%else%}
+              <legend class="border-bottom mb-4">Add Movie</legend>
+            
+            {%endif%}
+
+            <!-- Title -->
+            <div class="form-group mb-3">
+                {{ form.title.label(class="form-control-label") }}
+
+                {% if form.title.errors %}
+                    {{ form.title(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.title.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.title(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- Release Year -->
+            <div class="form-group mb-3">
+                {{ form.release_year.label(class="form-control-label") }}
+
+                {% if form.release_year.errors %}
+                    {{ form.release_year(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.release_year.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.release_year(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- Genre -->
+            <div class="form-group mb-3">
+                {{ form.genre.label(class="form-control-label") }}
+
+                {% if form.genre.errors %}
+                    {{ form.genre(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.genre.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.genre(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="form-group mb-3">
+                {{ form.description.label(class="form-control-label") }}
+
+                {% if form.description.errors %}
+                    {{ form.description(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.description.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.description(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- Poster -->
+            <div class="form-group mb-3">
+                {{ form.poster.label() }}
+                <br>
+                {{ form.poster(class="form-control-file") }}
+
+                {% if form.poster.errors %}
+                    {% for error in form.poster.errors %}
+                        <span class="text-danger">{{ error }}</span><br>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+        </fieldset>
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+
+    </form>
+</div>
+{% endblock content %}
