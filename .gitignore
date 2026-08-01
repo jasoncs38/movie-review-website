@@ -9,5 +9,5 @@ instance/
 
 .vscode/
 
-moviesite/static/profile_pics/*
-!moviesite/static/profile_pics/default.jpg
+
+migrate_data.py

@@ -13,7 +13,7 @@ class User(db.Model,UserMixin):
     username=db.Column(db.String(20),unique=True,nullable=False)
     email=db.Column(db.String(120),unique=True,nullable=False)
     password=db.Column(db.String(60),nullable=False)
-    image_file=db.Column(db.String(20),nullable=False,default='default.jpg')
+    image_file=db.Column(db.String(100),nullable=False,default='default.jpg')
     is_admin=db.Column(db.Boolean,nullable=False,default=False)
     reviews=db.relationship('Review',backref='author',lazy=True)
 
@@ -37,11 +37,11 @@ class User(db.Model,UserMixin):
 
 class Movie(db.Model):
     id=db.Column(db.Integer,primary_key=True)
-    title=db.Column(db.String(20),nullable=False)
+    title=db.Column(db.String(100),nullable=False)
     description=db.Column(db.Text,nullable=False)
     release_year = db.Column(db.Integer, nullable=False)
     genre=db.Column(db.Text,nullable=False)
-    poster=db.Column(db.String(20),nullable=False,default='default.jpg')
+    poster=db.Column(db.String(100),nullable=False,default='default.jpg')
     reviews=db.relationship('Review',backref='movie',cascade='all, delete-orphan',lazy=True)
 
     def __repr__(self):
